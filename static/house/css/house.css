@@ -1,0 +1,79 @@
+#houseinfo ul, li {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+}
+#houseinfo ul:after{
+    content: '';
+    display: block;
+    height: 0px;
+    overflow: hidden;
+    clear: both;
+}
+
+#houseinfo .tag_cates li {
+    float: left;
+    padding: 2px;
+}
+
+#houseinfo  .tag  span{
+    color: blue;
+    border: 1px solid blue;
+    border-radius: 50px;
+    padding: 2px 5px;
+}
+
+#houseinfo .cate  span{
+    color: red;
+    border: 1px solid red;
+    border-radius: 50px;
+    padding: 2px 5px;
+}
+
+.rank {
+    border: 1px dotted lightgray;
+    font-size: 1.5rem;
+}
+
+.rank h3{
+    margin: 0px;
+    padding: 5px;
+    background-color: powderblue;
+    text-align: center;
+}
+.rank li{
+    padding: 5px;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.rank .no{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    margin: 2px;
+    background-color: dimgray;
+    color: white;
+}
+
+.rank .no1 {
+    background-color: indianred;
+}
+
+.rank .no2 {
+    background-color: orangered;
+}
+
+.rank .no3 {
+    background-color: orange;
+}
+
+.rank li span:last-child{
+    position: absolute;
+    right: 20px;
+    color: darkgray;
+}
+
+#houses li dd a {
+    margin-bottom: -15px;
+}

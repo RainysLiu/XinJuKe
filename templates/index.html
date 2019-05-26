@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block css %}
+    <link rel="stylesheet" href="/static/index/css/index.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/xinkujemain.css">
+{% endblock %}
+{% block content %}
+    <div id="index">
+        <div id="city">
+            <ul  >
+                <li  id="area" ><a  href="/" style="background:#1C9982" class="btn {% if cate_id == 0 %}btn-primary{% else %}btn-info{% endif %}">城市</a></li>
+                {% for city in citys %}
+                    <li><a href="/?cid={{ city.id }}" style="" class="btn {% if city_id == city.id %}btn-primary{% else %}btn-info{% endif %}">{{ city.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+         <div id="region">
+            <ul >
+                <li  id="area" ><a  href="/" style="background:#1C9982" class="btn {% if cate_id == 0 %}btn-primary{% else %}btn-info{% endif %}">区县</a></li>
+                {% for region in regions %}
+                    <li><a href="/?cid={{ city_id }}&rid={{ region.id }}" style="" class="btn {% if region_id == region.id %}btn-primary{% else %}btn-info{% endif %}">{{ region.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="houses">
+            <ul>
+                {% for house in pager.object_list %}
+                    <li >
+                        <dl style="height: 430px;width: 400px">
+                            <dt>
+                                <div style="overflow: hidden">
+                                    <img src="{{ house.image }}"
+                                         width="400" height="224">
+                                </div>
+                            </dt>
+                            <dd style="font-size: 16px; color: #dd0000">{{ house.name }}</dd>
+                            <dd>类型：{{ house.house_type }}</dd>
+                            <dd>价格：{{ house.price }}/月</dd>
+                            <dd>配置：{% for fac in house.facility.all %}{{ fac.name }} {% endfor %}</dd>
+                            <dd>
+                                <a class="btn btn-success" style="background: #00bc6f" href="/house/show/{{ house.id }}/">查看详情</a>
+                            </dd>
+                        </dl>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li>
+                    <a {% if pager.has_previous %}
+                        href="/?cid={{ city_id}}&rid={{ region_id }}&page={{ pager.previous_page_number }}"
+                    {% endif %} aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% for page in paginator.page_range %}
+                    <li {% if page == pager.number %}class="active"{% endif %}>
+                        <a {% if page != pager.number %}href="/?cid={{ city_id }}&rid={{ region_id }}&page={{ page }}"{% endif %} >{{ page }}</a>
+                    </li>
+                {% endfor %}
+                <li>
+                    <a {% if pager.has_next %}
+                        href="/?cid={{ city_id }}&rid={{ region_id }}&page={{ pager.next_page_number }}"
+                    {% endif %} aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+
+        </nav>
+    </div>
+{% endblock %}
+

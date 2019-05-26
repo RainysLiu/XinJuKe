@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>{{ title }}</title>
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/xinkujemain.css">
+	<script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+
+{% endblock css %}
+
+{% block content %}
+
+	<div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="/user/info/" >个人信息</a></li><br>
+                <li><a href="/user/marked/" >我的收藏</a></li><br>
+				<li><a href="/order/myorder/" >我的预约</a></li><br>
+                <li><a href="/user/mypublish/" class="active">我的发布</a></li><br>
+			</ul>
+		</div>
+        <div class="right_content clearfix">
+        <div class="info_con clearfix">
+            <div class="btn"><a class="btn btn-info" style="background-color: green;width: 120px;height: auto" href="/house/addhouse/">发布新房源</a></div>
+            </div>
+            <div><h3 class="common_title2" style="background-color: #a6e1ec;height: 30px"><span style="color: black">我发布过的房源({{ houses_list.count }})</span></h3></div>
+            <div class="has_view_list">
+                <ul class="goods_type_list clearfix">
+                    {% for house in houses_list %}
+                        <li>
+                            <a href="/house/show/{{house.id}}/"><img src="{{house.image}}/"></a>
+                            <h4><a href="/house/show/{{ house.id }}/" style="font-size: small">{{house.name}}<span class="prize" style="color: #ff2222">{{house.price}}/月</span></a></h4>
+                            <div class="operate">
+                                <span class="unit" ><span style="color: black">发布时间:</span><br>{{ house.add_time }}</span>
+                                <a href="#" class="add_goods" title="加入预定"></a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+	</div>
+{% endblock content %}
+

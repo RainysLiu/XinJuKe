@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>{{ title }}</title>
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/xinkujemain.css">
+	<script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+
+{% endblock css %}
+
+{% block content %}
+
+	<div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="/user/info/" class="active">个人信息</a></li><br>
+                <li><a href="/user/marked/">我的收藏</a></li><br>
+				<li><a href="/order/myorder/">我的预约</a></li><br>
+                <li><a href="/user/mypublish/">我的发布</a></li><br>
+			</ul>
+		</div>
+		<div class="right_content clearfix">
+            <div class="info_con clearfix" style="height: auto">
+				<h3 class="common_title2">基本信息</h3>
+                <h4 class="common_title3"><a href="/user/modifyinfo/">修改个人信息</a></h4>
+                    <ul class="user_info_list" style="font-size: 14px;height: auto">
+                        <li><span>头像：</span><img style="width: 60px;height: 60px" src="{{ user.cover }}/"></li>
+                        <li><span>用户名：</span>{{ user.name }}</li>
+                        <li><span>电话：</span>{{ user.phone }}<br></li>
+                        <li><span>邮箱：</span>{{ user.email }}<br></li>
+                        <li><span>真实姓名：</span>{{ user.real_name }}</li>
+                        <li><span>身份证：</span>{{ idcard }}</li>
+                    </ul>
+            </div>
+            <div><h3 class="common_title2">最近浏览</h3></div>
+            <div class="has_view_list">
+                <ul class="goods_type_list clearfix">
+                    {% for house in houses_list %}
+                        <li>
+                            <a href="/house/show/{{house.id}}/"><img src="{{house.image}}/"></a>
+                            <h4><a href="/house/show/{{ house.id }}/">{{house.name}}</a></h4>
+                            <div class="operate">
+                                <span class="prize">{{house.price}}/月</span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+	</div>
+{% endblock content %}

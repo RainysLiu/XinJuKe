@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>{{ title }}</title>
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/xinkujemain.css">
+	<script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+
+{% endblock css %}
+
+{% block content %}
+
+	<div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="/user/info/" >个人信息</a></li><br>
+                <li><a href="/user/marked/" class="active">我的收藏</a></li><br>
+				<li><a href="/order/myorder/">我的预约</a></li><br>
+                <li><a href="/user/mypublish/">我的发布</a></li><br>
+			</ul>
+		</div>
+        <div class="right_content clearfix">
+        <div class="info_con clearfix">
+{#            <div class="btn"><h3 class="common_title2" style="font-size: 20px;"><a href="">点此发布新房源</a></h3></div>#}
+            </div>
+            <div><h3 class="common_title2" style="background-color: #a6e1ec;height: 30px"><span style="color: black">我收藏的房源({{ colletions_list.count }})</span></h3></div>
+            <div class="has_view_list">
+                <ul class="goods_type_list clearfix">
+                    {% for collection in colletions_list %}
+                        <li>
+                            <a href="/house/show/{{collection.house.id}}/"><img src="{{collection.house.image}}/"></a>
+                            <h4><a href="/house/show/{{ collection.house.id }}/" style="font-size: small">{{collection.house.name}}<span class="prize" style="color: #ff2222">{{collection.house.price}}/月</span></a></h4>
+                            <div class="operate">
+                                <span class="unit" ><span style="color: black">收藏时间:</span><br>{{ collection.add_time }}</span>
+                                <a href="#" class="add_goods" title="加入预定"></a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+	</div>
+{% endblock content %}

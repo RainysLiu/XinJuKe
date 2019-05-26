@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/xinkujemain.css">
+	<script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+
+{% endblock css %}
+
+{% block content %}
+
+
+	<h3 class="common_title">预约列表</h3>
+
+	<div class="common_list_con clearfix">
+		<ul class="goods_list_th clearfix">
+			<li class="col01">房屋名称</li>
+			<li class="col02">租赁方式</li>
+			<li class="col03">房屋价格</li>
+			<li class="col04">预定天数</li>
+			<li class="col05">小计</li>
+		</ul>
+        {% for order in orders%}
+            <ul class="goods_list_td clearfix">
+{#                <li class="col01">{{ order.cn }}</li>#}
+{#                <li class="col">{{ order.add_time }}</li>#}
+{#                <li class="col">{{ order.status }}</li>#}
+                <li class="col02"><img src="{{ order.house.image }}"></li>
+                <li class="col03">{{ order.house.name}}</li>
+                <li class="col04">{{ order.house.rent_type }}</li>
+                <li class="col05">{{ order.house.price }}</li>
+                <li class="col06">{{ order.days}}</li>
+                <li class="col07">{{ order.house.price }}</li>
+		    </ul>
+        {% endfor %}
+	</div>
+
+	<h3 class="common_title">总预支预测</h3>
+
+{#	<div class="order_submit clearfix">#}
+{#		<a href="javascript:;" id="order_btn">房东付款</a>#}
+{#	</div>#}
+
+	<div class="popup_con">
+		<div class="popup">
+			<p>提交成功！</p>
+		</div>
+
+		<div class="mask"></div>
+	</div>
+	<script type="text/javascript">
+		$('#order_btn').click(function() {
+			localStorage.setItem('order_finish',2);
+
+			$('.popup_con').fadeIn('fast', function() {
+
+				setTimeout(function(){
+					$('.popup_con').fadeOut('fast',function(){
+						window.location.href = '/';
+					});
+				},3000)
+
+			});
+		});
+	</script>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+#index ul,li {
+    list-style: none;
+}
+
+#index li{
+    float: left;
+    margin: 5px;
+}
+
+#index ul{
+    background-color: #f9f9f9;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#index ul:after{
+    content: '';
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+
+#houses {
+    font-size: 1.4rem;
+}
+
+#houses dd {
+    padding: 5px;
+}
+
+#houses li{
+    background-color: #f2dede;
+    padding: 0;
+    text-align: center;
+}
+
+#houses li dd a {
+    margin-bottom: -15px;
+}
+
+#houses img:hover{
+     transform: scale3d(1.15, 1.15, 1.15);
+    /*transform: rotateY(30deg);*/
+    /*transform-origin: 0.5%;*/
+    transition: transform linear .1s;
+}

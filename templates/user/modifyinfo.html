@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>{{ title }}</title>
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/xinkujemain.css">
+	<script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+
+{% endblock css %}
+
+{% block content %}
+
+    <div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="/user/info/" >个人信息</a></li><br>
+                <li><a href="/user/marked/" >我的收藏</a></li><br>
+				<li><a href="/order/myorder/" >我的预约</a></li><br>
+                <li><a href="/user/mypublish/" class="active">我的发布</a></li><br>
+			</ul>
+		</div>
+        <div class="right_content clearfix">
+            <div class="navbar-header" >
+            <h3 style="font-size: 20px;color: #00a0e9">修改个人信息</h3>
+            </div >
+            <div id="addhouse">
+
+        <hr>
+        <form class="form form-horizontal"
+              action="/user/modifyinfo_handle/"
+              method="post">
+                {% csrf_token %}
+            <div class="form-group">
+                <label class="col-xs-2 text-right">更改头像：</label>
+                <div class="col-xs-6">
+                   <input type="hidden" name="img"  required>
+                    <img id="preImg" class="am-button" src="/static/images/default.png"
+                         width="100" height="100"
+                         onclick="ImgSelector.click()">
+                </div>
+
+            </div>
+              <div class="form-group">
+                <label class="col-xs-2 text-right">用户名:</label>
+                <div class="col-xs-6">
+                    <span style="color: black;font-size: small">{{ user.name }}</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-2 text-right">更改手机号:</label>
+                <div class="col-xs-6">
+                    <input class="form-control" id='tel' name="tel"  value="{{ user.phone }}" placeholder="{{ user.phone }}">
+                    <span class="error_tip" hidden>提示信息</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-2 text-right">更改邮箱:</label>
+                <div class="col-xs-6">
+                    <input class="form-control" id='email' name="email"  value="{{ user.email }}" placeholder="{{ user.email }}">
+
+                </div>
+            </div>
+                        <div class="form-group">
+                <label class="col-xs-2 text-right">更改真实姓名:</label>
+                <div class="col-xs-6">
+                    <input class="form-control" id='realname' name="real_name"  value="{{ user.real_name }}" placeholder="{{ user.real_name }}">
+
+                </div>
+            </div>
+                        <div class="form-group">
+                <label class="col-xs-2 text-right">更改身份证号:</label>
+                <div class="col-xs-6">
+                    <input class="form-control" id='idcard' name="idcard"  value="{{ user.id_card }}" placeholder="{{ user.id_card }}">
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-xs-offset-2"
+                     style="padding-left: 20px">
+                    <button class="btn btn-primary" >确认并保存</button>
+                </div>
+            </div>
+
+        </form>
+        <input type="file" id="ImgSelector"
+               onchange="uploadImg(this.files[0])"
+               style="display:none">
+
+        </div>
+
+
+        </div>
+
+    </div>
+
+
+
+{% endblock content %}
+
+
+{% block js %}
+    <script>
+        function uploadImg(imgFile) {
+            // 要求只能上传 图片，大小限制在2M以内
+            if(! imgFile.type.startsWith('image/')){
+                alert('只限制为图片文件！');
+                return
+            }
+
+            if( imgFile.size > 2*1024*1024){
+                alert('图片大小已超出2M');
+                return
+            }
+
+            if(confirm('是否要上传该头像?')){
+                 console.log(imgFile);
+
+                 let url = '/user/update_img/';
+                 let formData = new FormData();
+
+                 //向表单数据中添加 img 文件字段及文件对象
+                 formData.append('img', imgFile);
+
+                 // AJAX 异步请求对象
+                 let request = new XMLHttpRequest();
+                 request.open('post', url, true);
+
+                 // 设置请求完成后的事件处理函数
+                 request.onload = function () {
+                     if(request.status == 200 && request.readyState == 4){
+                         resp_data = JSON.parse(request.responseText);
+                         if (resp_data.code == 20){
+                             alert('--上传成功-');
+                             alert(resp_data.path);
+
+                             //显示图片
+                             $('#preImg').attr('src', '/static/images/'+resp_data.path);
+
+                             // 将上传图片的路径加入到 hiddern的photo字段中
+                             $('input[name="img"]').val('/static/images/'+resp_data.path);
+                         }else{
+                             // 上传发生错误
+                             alert(resp.msg);
+                         }
+                     }
+                 }
+
+                 // 发送数据
+                 request.send(formData);
+            }
+        }
+
+        $(function(){			//$(function()){}等价于$(document).ready(function(){})
+                    //这是为了防止文档在完全加载（就绪）之前运行 jQuery 代码。
+var error_name = false;
+var error_password = false;
+var error_check_password = false;
+var error_tel = false;
+var error_check = false;
+
+
+
+
+$('#pwd').blur(function() {
+    check_pwd();
+});
+
+$('#cpwd').blur(function() {
+    check_cpwd();
+});
+
+$('#tel').blur(function() {
+    check_tel();
+});
+
+
+
+function check_user_name(){
+    var len = $('#user_name').val().length;
+    if(len<5||len>20)
+    {
+        $('#user_name').next().html('请输入5-20个字符的用户名');
+        $('#user_name').next().show();
+        error_name = true;
+    }
+    else
+    {
+        $.get('/user/register_exist/?uname='+$('#user_name').val(), function (data) {
+            if (data.count == 1){
+                $('#user_name').next().html('用户名已存在').show();
+                error_name = true;
+            } else {
+                $('#user_name').next().hide();
+                error_name = false;
+            }
+        });
+    }
+}
+
+function check_pwd(){
+    var len = $('#pwd').val().length;
+    if(len<8||len>20)
+    {
+        $('#pwd').next().html('密码最少8位，最长20位');
+        $('#pwd').next().show();
+        error_password = true;
+    }
+    else
+    {
+        $('#pwd').next().hide();
+        error_password = false;
+    }
+}
+
+function check_cpwd(){
+    var pass = $('#pwd').val();
+    var cpass = $('#cpwd').val();
+
+    if(pass!=cpass)
+    {
+        $('#cpwd').next().html('两次输入的密码不一致');
+        $('#cpwd').next().show();
+        error_check_password = true;
+    }
+    else
+    {
+        $('#cpwd').next().hide();
+        error_check_password = false;
+    }
+}
+
+function check_tel(){
+    var re = /^[1][3,4,5,7,8][0-9]{9}$/;
+
+    if(re.test($('#tel').val()))      //test() 方法用于检测一个字符串是否匹配某个模式.
+    {
+        $.get('/user/register_tel_exist/?utel='+$('#tel').val(), function (data) {
+            if (data.tcount == 1){
+                $('#tel').next().html('该号码已被人注册').show();
+                error_tel = true;
+
+
+            }
+            else {
+                $('#tel').next().hide();
+                error_tel = false;
+            }
+        });
+
+
+    }
+    else
+    {
+        $('#tel').next().html('你输入的号码不正确');
+        $('#tel').next().show();
+        error_tel = true;
+    }
+
+
+}
+
+$('#zhuce').click(function() {      //提交按钮,所有验证通过方可提交
+    check_user_name();
+    check_pwd();
+    check_cpwd();
+    check_tel();
+
+    if(error_name == false && error_password == false && error_check_password == false && error_tel == false && error_check == false)
+    {
+        $('#zhuceform').submit();   //提交表单
+        return true;
+    }
+    else
+    {
+        console.log('输入有误');     //在控制台输出
+        return false;
+    }
+})
+})
+
+</script>
+{% endblock %}

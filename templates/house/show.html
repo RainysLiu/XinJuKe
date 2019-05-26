@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/house/css/house.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/xinkujemain.css">
+{% endblock %}
+   <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+
+
+{% block content %}
+
+{#	<div class="navbar_con" style="color: black">#}
+{#	</div>#}
+
+	<div class="breadcrumb" style="font-size: medium;width: 1300px">
+		<a href="/?cid={{ house.area.parent.id }}">{{ house.area.parent.name }}</a>
+		<span>></span>
+		<a href="/?cid={{ house.area.parent.id }}&rid={{ house.area.id }}">{{ house.area.name }}</a>
+		<span>></span>
+		<a href="#">房屋详情</a>
+	</div>
+
+	<div class="goods_detail_con clearfix" style="height: 420px">
+		<div class="goods_detail_pic fl"><img src="{{house.image}}" style="height: 360px;width: 500px;"></div>
+		<div class="goods_detail_list fr" style="width: 700px;margin-left: 100px">
+			<div class="prize_bar" style="height:35px">
+                	<h3 style="color:black;position: center">{{house.name}}</h3>
+			</div>
+            <div style="font-size-adjust: initial">
+                        <div>
+                            <span class="text-right" style="margin-left: 10px;font-size: 16px" >
+                                <span style="color: #00a2d4" >价格: </span>
+                                <span style="color: #ff2222" class="show_pirze"><em id="gprice">{{ house.price }}</em></span>元/月
+                            </span>
+                        </div>
+                        <div class="'facility">
+                            <ul style="margin-left: 10px;font-size: 16px" >
+                                <span style="color: #00a2d4">配置: </span>
+                                {% for fac in house.facility.all %}
+                                        <span style="font-size: 16px">{{ fac.name }}</span>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                         <div style="margin-left: 10px;font-size: 16px">
+                            <span style="color: #00a2d4">楼层:</span>
+                            <span>{{ house.floor}}</span>
+                         </div>
+                        <ul style="margin-left: 10px;font-size: 16px">
+                            <div class="location">
+                                <span style="color: #00a2d4">区域: </span>
+                                <span>{{ house.area.parent.name }}</span>
+                                <span>{{ house.area.name }}</span>
+                            </div>
+                        </ul>
+                        <div style="margin-left: 10px;font-size: 18px">
+                            <span style="color: #00a2d4">类型:</span>
+                            <span>{{ house.house_type}}</span>
+                        </div>
+                        <div style="margin-left: 10px;font-size: 16px">
+                            <span style="color: #00a2d4">街道:</span>
+                            <span>{{ house.region}}</span>
+                        </div>
+                        <div style="margin-left: 10px;font-size: 16px">
+                            <span style="color: #00a2d4">租赁方式:</span>
+                            <span>{{ house.rent_type}}</span>
+                        </div>
+                        <div style="margin-left: 10px;font-size: 16px">
+                            <span style="color: #00a2d4">社区:</span>
+                            <span>{{ house.community}}</span>
+                        </div>
+                        <div style="margin-left: 10px;font-size: 16px">
+                            <span style="color: #00a2d4">房东:</span>
+                            <span>{{ house.user.name}}</span>
+                        </div>
+            <div class="goods_num clearfix" style="margin-top: auto;">
+				<div class="num_name fl">预定月数：</div>
+				<div class="num_add fl" style="height: auto;width: auto">
+					<input type="text" class="num_show fl" value="1" id="shuliang" >
+					<a href="javascript:;" class="add fr" id="jiahao">+</a>
+					<a href="javascript:;" class="minus fr" id="jianhao">-</a>
+				</div>
+			</div>
+			<div class="total" style="margin-top: auto">总费用：<em id="gtotal"></em></div>
+         <div class="operate_btn" style="margin-top: auto">
+				<a  class="btn" style="color: black;background-color: #d59392;margin-right: 80px" onclick="collection({{ house.id }}, this)">{{ info.collectionstatus }}</a>
+				<a  class="btn" style="color: black; background-color: #a6e1ec" onclick="add_house({{ house.id }}, this)">{{ infos.status }}</a>
+			</div>
+        </div>
+
+		</div>
+	</div>
+
+	<div class="main_wrap clearfix">
+		<div class="l_wrap fl clearfix">
+			<div class="new_goods">
+				<h3>相关房屋</h3>
+				<ul>
+					{% for house in rank_houses %}
+                        <li>
+                            <a href="/house/show/{{ house.0.id }}/"><img src="{{house.0.image}}"></a>
+                            <h4><a href="/house/show/{{ house.0.id }}/">{{house.0.name}}</a></h4>
+                            <div class="prize">{{house.0.rice}}</div>
+                        <div class="count" style="color: #d9534f">{{house.1}}次浏览</div>
+                        </li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+
+		<div class="r_wrap fr clearfix">
+			<ul class="detail_tab clearfix">
+				<li class="active">房屋介绍</li>
+			</ul>
+
+			<div class="tab_content">
+				<dl>
+					<dt>房屋详情：</dt>
+                    {% if house.house_detail %}
+                    <dd><span style="font-size: 20px">{{house.house_detail | safe }}</span></dd>
+                      {% else %}
+                    <dd>暂无信息</dd>
+                    {% endif %}
+
+				</dl>
+			</div>
+        <div class="img-rounded">
+
+            {% for img in imgs %}
+                        <img src="{{img.image}}"style="height: 300px;width: 450px;margin: 10px;">
+            {% endfor %}
+        </div>
+
+		</div>
+	</div>
+	<div class="add_jump"></div>
+{% endblock content %}
+{%block js%}
+    <script>
+        $(function () {
+            $('#jiahao').click(function () {
+                num = parseFloat($('#shuliang').val());
+                $('#shuliang').val(num+1);
+                $('#shuliang').blur();
+            });
+
+            $('#jianhao').click(function () {
+                num = parseFloat($('#shuliang').val());     //专门用于把字符串转换成数值
+                if (num > 1){
+                    $('#shuliang').val(num-1);
+                    $('#shuliang').blur();
+                }
+            });
+
+            $('#shuliang').blur(function () {
+                num = parseInt($('#shuliang').val());     //val() 方法返回或设置被选元素的值。
+                if(num){        //如果不为空
+                    if (num < 1)        //如果小于1
+                        num = 1;
+                    price = parseFloat($('#gprice').text());    //text() 方法方法设置或返回被选元素的文本内容。
+                    total = num * price;
+                    $('#shuliang').val(num);
+                    $('#gtotal').text(total.toFixed(2) + '元');  //toFixed(num) 方法可把原来的数四舍五入为小数位数为num的数字。
+                } else {
+                    $('#shuliang').val(1);
+                    price = parseFloat($('#gprice').text());    //text() 方法方法设置或返回被选元素的文本内容。
+                    total = 1.0 * price;
+                    $('#gtotal').text(total.toFixed(2) + '元');  //toFixed(num) 方法可把原来的数四舍五入为小数位数为num的数字。
+                }
+                }
+            );
+            var $add_x = $('#add_cart').offset().top;
+            var $add_y = $('#add_cart').offset().left;
+
+            var $to_x = $('#show_count').offset().top;
+            var $to_y = $('#show_count').offset().left;
+
+            $('#add_cart').click(function(){
+                $(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
+                if ($('.login_btn').text().indexOf('登录') >= 0){
+                    alert("请先登录后再购买");
+                    location.href = '/user/login/';
+                    return;
+                }
+                //动画
+                $(".add_jump").stop().animate({
+                    'left': $to_y+7,
+                    'top': $to_x+7},
+                    "fast",
+                    function() {
+                        $(".add_jump").fadeOut('fast'
+                        //     function(){
+                        //     $('#show_count').html();
+                        // }
+                        );
+                    }
+                );
+                //异步      ajax
+                s1();
+            });
+            function s1() {
+                num = parseInt($('.num_show').val());
+                $.get('/cart/add{{goods.id}}_' + num + '/', function (data) {
+                    $('#show_count').text(data.count);
+                });
+            }
+        })
+    </script>
+    <script>
+        //收藏
+        function collection(house_id, a_node) {
+            let url = '/user/collection/'+ house_id +'/';
+            $.getJSON(url, function (data) {
+                if(data.code == 100) {
+                    if (confirm('当前用户未登录，是否跳转到登录页面')) {
+                        window.open('/user/login/', target = '_self');
+                    }
+                }
+                if(data.code == 200){
+                    alert(data.msg1)
+                }
+                $(a_node).text(data.msg);
+            })
+        }
+        //预约
+        function add_house(house_id, a_node) {
+            num = $('#shuliang').val()
+            let url = '/order/addorder/'+ house_id +'/'+ num +'/';
+            alert(url)
+            $.getJSON(url, function (data) {
+                if(data.code == 100){
+                    if(confirm('当前用户未登录，是否跳转到登录页面')){
+                        window.open('/user/login/', target = '_self');
+                    }
+                }
+                $(a_node).text(data.msg);
+            })
+        }
+    </script>
+{%endblock js%}

@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>{{ title }}</title>
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="/static/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/xinkujemain.css">
+	<script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+
+{% endblock css %}
+
+{% block content %}
+
+    <div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="/user/info/" >个人信息</a></li><br>
+                <li><a href="/user/marked/" >我的收藏</a></li><br>
+				<li><a href="/order/myorder/" >我的预约</a></li><br>
+                <li><a href="/user/mypublish/" class="active">我的发布</a></li><br>
+			</ul>
+		</div>
+        <div class="right_content clearfix">
+            <div class="navbar-header" >
+            <h3 style="font-size: 20px;color: #00a0e9">发布新房源</h3>
+            </div >
+            <div id="addhouse">
+
+        <hr>
+        <form class="form form-horizontal"
+              action="/house/add_handle/"
+              method="post">
+                {% csrf_token %}
+            <div class="form-group">
+                <label class="col-xs-2 text-right">标题</label>
+                <div class="col-xs-6">
+                    <input class="form-control" name="title" value=""  required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-2 text-right">价格:</label>
+                <div class="col-xs-6">
+                    <input class="form-control" type="number" name="price" value="{{ form.price.value }}" placeholder="" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-2 text-right">房屋类型:</label>
+                <div class="col-xs-6">
+                    <input class="form-control" name="house_type" value="{{ form.house_type.value }}" placeholder="" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-2 text-right">租赁方式</label>
+                <div class="col-xs-6">
+                    <input class="form-control" name="rent_type" value="{{ form.rent_type.value }}" placeholder="" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-2 text-right">房屋主图片：</label>
+                <div class="col-xs-6">
+                   <input type="hidden" name="img"  required>
+                    <img id="preImg" class="am-button" src="/static/images/default.png"
+                         width="100" height="45"
+                         onclick="ImgSelector.click()">
+                </div>
+
+            </div>
+             <div class="form-group">
+                <label class="col-xs-2 text-right">楼层</label>
+                <div class="col-xs-6">
+                    <input class="form-control" type="number" name="floor" value="{{ form.phone.value }}" placeholder="" required>
+                </div>
+            </div>
+             <div class="form-group">
+                <label class="col-xs-2 text-right">小区</label>
+                <div class="col-xs-6">
+                    <input class="form-control" name="community" value="{{ form.phone.value }}" placeholder="" required>
+                </div>
+            </div>
+             <div class="form-group">
+                <label class="col-xs-2 text-right">区域</label>
+                <div class="col-xs-6">
+                    <input class="form-control" name="region" value="{{ form.phone.value }}" placeholder="" required>
+                </div>
+            </div>
+             <div class="form-group">
+                <label class="col-xs-2 text-right">地址</label>
+
+                <div class="col-xs-6">
+                    <input class="form-control" name="address" value="{{ form.phone.value }}" placeholder="" required>
+                </div>
+            </div>
+             <div class="form-group">
+                <label class="col-xs-2 text-right">配置</label>
+                <div class="col-xs-6">
+                    <select name="facility" class="select-multi adminselectmultiple form-control" id="id_facility" multiple="multiple">
+                        {% for fac in allfacility %}
+                        <option value="{{ fac.id }}">{{ fac.name }}</option>
+                        {% endfor %}
+                </select>
+                </div>
+            </div>
+             <div class="form-group">
+                <label class="col-xs-2 text-right">地区</label>
+                <div class="col-xs-6">
+                   <select name="area" class="adminselectwidget form-control" required id="id_area"> <option value="" selected>---------</option>
+                       {% for reg in allregion %}
+                        <option value="{{ reg.id }}">{{ reg.name }}</option>
+                        {% endfor %}
+
+                </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-offset-2"
+                     style="padding-left: 20px">
+                    <button class="btn btn-primary" >保存</button>
+                </div>
+            </div>
+
+        </form>
+        <input type="file" id="ImgSelector"
+               onchange="uploadImg(this.files[0])"
+               style="display:none">
+
+        </div>
+
+
+        </div>
+
+    </div>
+
+
+
+{% endblock content %}
+
+
+{% block js %}
+    <script>
+        function uploadImg(imgFile) {
+            // 要求只能上传 图片，大小限制在2M以内
+            if(! imgFile.type.startsWith('image/')){
+                alert('只限制为图片文件！');
+                return
+            }
+
+            if( imgFile.size > 2*1024*1024){
+                alert('图片大小已超出2M');
+                return
+            }
+
+            if(confirm('是否要上传该图片?')){
+                 console.log(imgFile);
+
+                 let url = '/user/upload_userimg/';
+                 let formData = new FormData();
+
+                 //向表单数据中添加 img 文件字段及文件对象
+                 formData.append('img', imgFile);
+
+                 // AJAX 异步请求对象
+                 let request = new XMLHttpRequest();
+                 request.open('post', url, true);
+
+                 // 设置请求完成后的事件处理函数
+                 request.onload = function () {
+                     if(request.status == 200 && request.readyState == 4){
+                         resp_data = JSON.parse(request.responseText);
+                         if (resp_data.code == 20){
+                             alert('--上传成功-');
+
+                             //显示图片
+                             $('#preImg').attr('src', '/static/images/'+resp_data.path);
+
+                             // 将上传图片的路径加入到 hiddern的photo字段中
+                             $('input[name="img"]').val('/static/images/'+resp_data.path);
+                         }else{
+                             // 上传发生错误
+                             alert(resp.msg);
+                         }
+                     }
+                 }
+
+                 // 发送数据
+                 request.send(formData);
+            }
+        }
+
+    </script>
+{% endblock %}
+
+
