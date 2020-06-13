@@ -25,6 +25,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'xadmin',
+    'django_crontab',
     'crispy_forms',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,6 +52,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+
+CRONJOBS = [
+    ('*/1 * * * *', 'mainapps.utils.crontab_clear_session',)
 ]
 
 ROOT_URLCONF = 'XinJuKe.urls'
@@ -88,6 +94,23 @@ DATABASES = {
         'NAME': 'xinjuke',
     }
 }
+
+
+# 配置缓存到redis 注:本项目Django版本1.11 不支持django_redis
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     }
+# }
+
+
+# 设置session引擎
+# SESSION_ENGINE = "'django.contrib.sessions.backends.cached_db'"
+# SESSION_CACHE_ALIAS = "default"
 
 # DATABASES = {
 #     'default': {

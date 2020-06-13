@@ -135,9 +135,10 @@ def login_handle(request):
 @login_test.login
 def logout(request):
     # request.session.flush()     #清空session信息
-    del request.session['user_id']
-    del request.session['user_name']
-    del request.session['user_cover']
+    # del request.session['user_id']
+    # del request.session['user_name']
+    # del request.session['user_cover']
+    request.session.flush()
     return redirect('/')
 
 @login_test.login

@@ -4,6 +4,8 @@ from django.core.paginator import Paginator
 import xadmin as admin
 from django.shortcuts import render
 from house.models import *
+from utils import crontab_clear_session
+
 
 def goindex(request):
     # 查询一级分类
