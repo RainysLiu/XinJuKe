@@ -78,7 +78,7 @@ def show(request, house_id):
             houses_ids = []
             houses_ids.append(houses_id)
         request.session[key]=houses_ids
-        print('用户%s浏览了房屋%s'%(key,houses_id))
+        print('用户%s浏览了房屋%s'%(key, houses_id))
     return response
 
 def search(request):

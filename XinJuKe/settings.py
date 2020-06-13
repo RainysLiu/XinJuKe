@@ -38,7 +38,11 @@ INSTALLED_APPS = [
     # 'djcelery',
     'haystack',
 ]
-
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
+    }}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -77,7 +81,7 @@ WSGI_APPLICATION = 'XinJuKe.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST':'39.106.2.131',
+        'HOST':'localhost',
         'POST':'3306',
         'USER':'root',
         'PASSWORD':'123456',
@@ -136,10 +140,10 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
 
-# FileField和ImageField上传文件存放的位�?
+# FileField和ImageField上传文件存放的位置
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 
-# 上传文件的URL访问的位�?
+# 上传文件的URL访问的位置
 MEDIA_URL = '/static/images/'
 #-----------------------配置邮箱--------------------
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -149,7 +153,7 @@ EMAIL_PORT = 25
 EMAIL_HOST_USER = 'xuechangan1126@163.com'
 #在邮箱中设置的客户端授权密码
 EMAIL_HOST_PASSWORD = 'xiaoan1126'
-#收件人看到的发件�?
+#收件人看到的发件箱
 EMAIL_FROM = 'python<xuechangan1126@163.com>'
 #-----------------------end--------------------------------
 

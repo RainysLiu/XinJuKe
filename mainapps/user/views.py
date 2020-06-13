@@ -191,7 +191,6 @@ def collection(request, house_id):
             msg['msg'] = '取消收藏'
             msg['msg1'] = '收藏成功'
 
-
     return JsonResponse(msg)
 
 @login_test.login
