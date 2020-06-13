@@ -40,6 +40,7 @@ def show(request, house_id):
     print('相关的房源：', relative_houseids)
     rank_houses = []
     rank_ids = rank.get_day_rank_ids()  # 查询当日所有的浏览量的数据
+    print("rank_ids:"+str(rank_ids))
     for house_tup in rank_ids:
         id = int(house_tup[0].decode())
         count = round(house_tup[1])

@@ -10,7 +10,7 @@ def add_day_rank(house_id):
 
     if not flag:  # 新的一天开始的时候
         redis_cache.expire('dayrank',24*60*60)
-    redis_cache.zincrby('dayrank',int(house_id), 1)
+    redis_cache.zincrby('dayrank',value=int(house_id), amount=1)
 
 
 # 获取日浏览量的所有排行id
