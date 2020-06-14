@@ -18,20 +18,18 @@ class IndexView(Dashboard):
     icon = "fa fa-dashboard"
 
     def get_page_id(self):
-        return 'home'
+        return "home"
 
 
 class UserSettingView(BaseAdminView):
-
     @never_cache
     def post(self, request):
-        key = request.POST['key']
-        val = request.POST['value']
-        us, created = UserSettings.objects.get_or_create(
-            user=self.user, key=key)
+        key = request.POST["key"]
+        val = request.POST["value"]
+        us, created = UserSettings.objects.get_or_create(user=self.user, key=key)
         us.value = val
         us.save()
-        return HttpResponse('')
+        return HttpResponse("")
 
 
 class LoginView(BaseAdminView):
@@ -50,17 +48,19 @@ class LoginView(BaseAdminView):
         helper = FormHelper()
         helper.form_tag = False
         helper.include_media = False
-        context.update({
-            'title': self.title,
-            'helper': helper,
-            'app_path': request.get_full_path(),
-            REDIRECT_FIELD_NAME: request.get_full_path(),
-        })
+        context.update(
+            {
+                "title": self.title,
+                "helper": helper,
+                "app_path": request.get_full_path(),
+                REDIRECT_FIELD_NAME: request.get_full_path(),
+            }
+        )
         defaults = {
-            'extra_context': context,
-            'current_app': self.admin_site.name,
-            'authentication_form': self.login_form or AdminAuthenticationForm,
-            'template_name': self.login_template or 'xadmin/views/login.html',
+            "extra_context": context,
+            "current_app": self.admin_site.name,
+            "authentication_form": self.login_form or AdminAuthenticationForm,
+            "template_name": self.login_template or "xadmin/views/login.html",
         }
         self.update_params(defaults)
         return login(request, **defaults)
@@ -83,12 +83,12 @@ class LogoutView(BaseAdminView):
     def get(self, request, *args, **kwargs):
         context = self.get_context()
         defaults = {
-            'extra_context': context,
-            'current_app': self.admin_site.name,
-            'template_name': self.logout_template or 'xadmin/views/logged_out.html',
+            "extra_context": context,
+            "current_app": self.admin_site.name,
+            "template_name": self.logout_template or "xadmin/views/logged_out.html",
         }
         if self.logout_template is not None:
-            defaults['template_name'] = self.logout_template
+            defaults["template_name"] = self.logout_template
 
         self.update_params(defaults)
         return logout(request, **defaults)

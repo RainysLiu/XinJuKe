@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class ContentConfig(AppConfig):
-    name = 'house'
+    name = "house"

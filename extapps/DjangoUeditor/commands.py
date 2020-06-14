@@ -25,8 +25,14 @@ class UEditorEventHandler(object):
                 event_code = getattr(self, event)()
                 if event_code:
                     event_code = event_code % {"editor": editorID}
-                    event_codes.append(jscode % {"editor": editorID, "event": event[
-                                       3:], "event_code": event_code})
+                    event_codes.append(
+                        jscode
+                        % {
+                            "editor": editorID,
+                            "event": event[3:],
+                            "event_code": event_code,
+                        }
+                    )
             except:
                 pass
 
@@ -67,7 +73,7 @@ class UEditorCommand(object):
         """ % {
             "ajax_url": self.ajax_url,
             "ajax_success": self.onExecuteAjaxCommand("success"),
-            "ajax_error": self.onExecuteAjaxCommand("error")
+            "ajax_error": self.onExecuteAjaxCommand("error"),
         }
 
     def render_command(self):
@@ -77,22 +83,30 @@ class UEditorCommand(object):
         queryvalue_command = self.onExecuteQueryvalueCommand()
         cmds = []
         if cmd or ajax_cmd:
-            cmds.append( u"""execCommand: function() {
+            cmds.append(
+                u"""execCommand: function() {
                     %(exec_cmd)s
                     %(exec_ajax_cmd)s
                 }
-            """ % {"exec_cmd": cmd, "exec_ajax_cmd": ajax_cmd},)
+            """
+                % {"exec_cmd": cmd, "exec_ajax_cmd": ajax_cmd},
+            )
 
         if queryvalue_command:
-            cmds.append(u"""queryCommandValue:function(){
+            cmds.append(
+                u"""queryCommandValue:function(){
                     %s
-                }""" % queryvalue_command)
+                }"""
+                % queryvalue_command
+            )
         if len(cmds) > 0:
             return u"""
             editor.registerCommand(uiName, {
                     %s
                 });
-            """ % ",".join(cmds)
+            """ % ",".join(
+                cmds
+            )
         else:
             return ""
 
@@ -107,7 +121,7 @@ class UEditorCommand(object):
             "uiName": self.uiName,
             "uiObject": self.render_ui(editorID),
             "index": self.index,
-            "editor": editorID
+            "editor": editorID,
         }
 
     def onExecuteCommand(self):
@@ -124,7 +138,6 @@ class UEditorCommand(object):
 
 
 class UEditorButtonCommand(UEditorCommand):
-
     def __init__(self, **kwargs):
         self.icon = kwargs.pop("icon", "")
         super(UEditorButtonCommand, self).__init__(**kwargs)
@@ -150,12 +163,11 @@ class UEditorButtonCommand(UEditorCommand):
         """ % {
             "icon": urljoin(USettings.gSettings.MEDIA_URL, self.icon),
             "onclick": self.onClick(),
-            "title": self.title
+            "title": self.title,
         }
 
 
 class UEditorComboCommand(UEditorCommand):
-
     def __init__(self, **kwargs):
         self.items = kwargs.pop("items", [])
         self.initValue = kwargs.pop("initValue", "")
@@ -185,7 +197,7 @@ class UEditorComboCommand(UEditorCommand):
             "title": self.title,
             "items": str(self.get_items()),
             "onselect": self.onSelect(),
-            "initValue": self.initValue
+            "initValue": self.initValue,
         }
 
 

@@ -14,18 +14,28 @@ from django.utils.html import escape
 from django.template import loader
 from django.utils.translation import ugettext as _
 from xadmin import widgets
-from xadmin.layout import FormHelper, Layout, Fieldset, TabHolder, Container, Column, Col, Field
+from xadmin.layout import (
+    FormHelper,
+    Layout,
+    Fieldset,
+    TabHolder,
+    Container,
+    Column,
+    Col,
+    Field,
+)
 from xadmin.util import unquote
 from xadmin.views.detail import DetailAdminUtil
 
 from .base import CommAdminView, filter_hook, csrf_protect_m
+
 
 class FormAdminView(CommAdminView):
     form = forms.ModelForm
     title = None
     readonly_fields = ()
 
-    form_template = 'xadmin/views/form.html'
+    form_template = "xadmin/views/form.html"
 
     form_layout = None
 
@@ -56,22 +66,38 @@ class FormAdminView(CommAdminView):
         fields = self.form_obj.fields.keys()
 
         if layout is None:
-            layout = Layout(Container(Col('full',
-                Fieldset("", *fields, css_class="unsort no_title"), horizontal=True, span=12)
-            ))
+            layout = Layout(
+                Container(
+                    Col(
+                        "full",
+                        Fieldset("", *fields, css_class="unsort no_title"),
+                        horizontal=True,
+                        span=12,
+                    )
+                )
+            )
         elif type(layout) in (list, tuple) and len(layout) > 0:
             if isinstance(layout[0], Column):
                 fs = layout
             elif isinstance(layout[0], (Fieldset, TabHolder)):
-                fs = (Col('full', *layout, horizontal=True, span=12),)
+                fs = (Col("full", *layout, horizontal=True, span=12),)
             else:
-                fs = (Col('full', Fieldset("", *layout, css_class="unsort no_title"), horizontal=True, span=12),)
+                fs = (
+                    Col(
+                        "full",
+                        Fieldset("", *layout, css_class="unsort no_title"),
+                        horizontal=True,
+                        span=12,
+                    ),
+                )
 
             layout = Layout(Container(*fs))
 
             rendered_fields = [i[1] for i in layout.get_field_names()]
             container = layout[0].fields
-            other_fieldset = Fieldset(_(u'Other Fields'), *[f for f in fields if f not in rendered_fields])
+            other_fieldset = Fieldset(
+                _(u"Other Fields"), *[f for f in fields if f not in rendered_fields]
+            )
 
             if len(other_fieldset.fields):
                 if len(container) and isinstance(container[0], Column):
@@ -123,33 +149,35 @@ class FormAdminView(CommAdminView):
     @filter_hook
     def get_context(self):
         context = super(FormAdminView, self).get_context()
-        context.update({
-            'form': self.form_obj,
-            'title': self.title,
-        })
+        context.update(
+            {"form": self.form_obj, "title": self.title,}
+        )
         return context
 
     @filter_hook
     def get_media(self):
-        return super(FormAdminView, self).get_media() + self.form_obj.media + \
-            self.vendor('xadmin.page.form.js', 'xadmin.form.css')
+        return (
+            super(FormAdminView, self).get_media()
+            + self.form_obj.media
+            + self.vendor("xadmin.page.form.js", "xadmin.form.css")
+        )
 
     def get_initial_data(self):
         return {}
 
     @filter_hook
     def get_form_datas(self):
-        data = {'initial': self.get_initial_data()}
-        if self.request_method == 'get':
-            data['initial'].update(self.request.GET)
+        data = {"initial": self.get_initial_data()}
+        if self.request_method == "get":
+            data["initial"].update(self.request.GET)
         else:
-            data.update({'data': self.request.POST, 'files': self.request.FILES})
+            data.update({"data": self.request.POST, "files": self.request.FILES})
         return data
 
     @filter_hook
     def get_breadcrumb(self):
         bcs = super(FormAdminView, self).get_breadcrumb()
-        bcs.append({'title': self.title})
+        bcs.append({"title": self.title})
         return bcs
 
     @filter_hook
@@ -157,16 +185,14 @@ class FormAdminView(CommAdminView):
         context = self.get_context()
         context.update(self.kwargs or {})
 
-        return TemplateResponse(
-            self.request, self.form_template,
-            context)
+        return TemplateResponse(self.request, self.form_template, context)
 
     @filter_hook
     def post_response(self):
         request = self.request
 
-        msg = _('The %s was changed successfully.') % self.title
-        self.message_user(msg, 'success')
+        msg = _("The %s was changed successfully.") % self.title
+        self.message_user(msg, "success")
 
         if "_redirect" in request.GET:
             return request.GET["_redirect"]
@@ -175,4 +201,4 @@ class FormAdminView(CommAdminView):
 
     @filter_hook
     def get_redirect_url(self):
-        return self.get_admin_url('index')
+        return self.get_admin_url("index")

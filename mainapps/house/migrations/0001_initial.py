@@ -12,94 +12,222 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('user', '0001_initial'),
+        ("user", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Area',
+            name="Area",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=20, verbose_name='地区名')),
-                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='house.Area', verbose_name='所属地区')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=20, verbose_name="地区名")),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="house.Area",
+                        verbose_name="所属地区",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': '地区',
-                'verbose_name_plural': '地区',
-                'db_table': 't_area',
+                "verbose_name": "地区",
+                "verbose_name_plural": "地区",
+                "db_table": "t_area",
             },
         ),
         migrations.CreateModel(
-            name='Collections',
+            name="Collections",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('add_time', models.DateTimeField(auto_now_add=True, null=True, verbose_name='收藏时间')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "add_time",
+                    models.DateTimeField(
+                        auto_now_add=True, null=True, verbose_name="收藏时间"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': '用户收藏',
-                'verbose_name_plural': '用户收藏',
-                'db_table': 't_user_collections',
+                "verbose_name": "用户收藏",
+                "verbose_name_plural": "用户收藏",
+                "db_table": "t_user_collections",
             },
         ),
         migrations.CreateModel(
-            name='Facility',
+            name="Facility",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=20, verbose_name='设施名字')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=20, verbose_name="设施名字")),
             ],
             options={
-                'verbose_name': '配置',
-                'verbose_name_plural': '配置',
-                'db_table': 't_facility',
+                "verbose_name": "配置",
+                "verbose_name_plural": "配置",
+                "db_table": "t_facility",
             },
         ),
         migrations.CreateModel(
-            name='House',
+            name="House",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, verbose_name='标题')),
-                ('price', models.IntegerField(verbose_name='租赁价格')),
-                ('house_type', models.CharField(max_length=50, verbose_name='房屋类型')),
-                ('rent_type', models.CharField(max_length=50, verbose_name='租赁方式')),
-                ('floor', models.CharField(max_length=20, verbose_name='楼层')),
-                ('community', models.CharField(blank=True, max_length=20, null=True, verbose_name='小区')),
-                ('region', models.CharField(blank=True, max_length=20, null=True, verbose_name='区域')),
-                ('address', models.CharField(max_length=20, verbose_name='地址')),
-                ('phone', models.CharField(blank=True, max_length=11, null=True, verbose_name='房东电话')),
-                ('image', models.ImageField(blank=True, null=True, upload_to='houseimg', verbose_name='房屋主图片')),
-                ('add_time', models.DateTimeField(auto_now_add=True, null=True, verbose_name='添加时间')),
-                ('house_detail', DjangoUeditor.models.UEditorField(blank=True, default='', verbose_name='房屋详情')),
-                ('area', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='house.Area', verbose_name='地区')),
-                ('facility', models.ManyToManyField(blank=True, to='house.Facility', verbose_name='房屋配置')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user.MyUser', verbose_name='房东')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50, verbose_name="标题")),
+                ("price", models.IntegerField(verbose_name="租赁价格")),
+                ("house_type", models.CharField(max_length=50, verbose_name="房屋类型")),
+                ("rent_type", models.CharField(max_length=50, verbose_name="租赁方式")),
+                ("floor", models.CharField(max_length=20, verbose_name="楼层")),
+                (
+                    "community",
+                    models.CharField(
+                        blank=True, max_length=20, null=True, verbose_name="小区"
+                    ),
+                ),
+                (
+                    "region",
+                    models.CharField(
+                        blank=True, max_length=20, null=True, verbose_name="区域"
+                    ),
+                ),
+                ("address", models.CharField(max_length=20, verbose_name="地址")),
+                (
+                    "phone",
+                    models.CharField(
+                        blank=True, max_length=11, null=True, verbose_name="房东电话"
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="houseimg",
+                        verbose_name="房屋主图片",
+                    ),
+                ),
+                (
+                    "add_time",
+                    models.DateTimeField(
+                        auto_now_add=True, null=True, verbose_name="添加时间"
+                    ),
+                ),
+                (
+                    "house_detail",
+                    DjangoUeditor.models.UEditorField(
+                        blank=True, default="", verbose_name="房屋详情"
+                    ),
+                ),
+                (
+                    "area",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="house.Area",
+                        verbose_name="地区",
+                    ),
+                ),
+                (
+                    "facility",
+                    models.ManyToManyField(
+                        blank=True, to="house.Facility", verbose_name="房屋配置"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="user.MyUser",
+                        verbose_name="房东",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': '房屋信息',
-                'verbose_name_plural': '房屋信息',
-                'db_table': 't_house',
+                "verbose_name": "房屋信息",
+                "verbose_name_plural": "房屋信息",
+                "db_table": "t_house",
             },
         ),
         migrations.CreateModel(
-            name='HouseImage',
+            name="HouseImage",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(upload_to='houseimgs', verbose_name='房屋图片')),
-                ('house', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='house.House', verbose_name='房屋')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(upload_to="houseimgs", verbose_name="房屋图片"),
+                ),
+                (
+                    "house",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="house.House",
+                        verbose_name="房屋",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': '房屋图片',
-                'verbose_name_plural': '房屋图片',
-                'db_table': 't_houseimage',
+                "verbose_name": "房屋图片",
+                "verbose_name_plural": "房屋图片",
+                "db_table": "t_houseimage",
             },
         ),
         migrations.AddField(
-            model_name='collections',
-            name='house',
-            field=models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='house_user', to='house.House', verbose_name='收藏的房屋'),
+            model_name="collections",
+            name="house",
+            field=models.ForeignKey(
+                blank=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="house_user",
+                to="house.House",
+                verbose_name="收藏的房屋",
+            ),
         ),
         migrations.AddField(
-            model_name='collections',
-            name='user',
-            field=models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='user_house', to='user.MyUser', verbose_name='用户'),
+            model_name="collections",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="user_house",
+                to="user.MyUser",
+                verbose_name="用户",
+            ),
         ),
     ]

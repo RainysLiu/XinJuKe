@@ -7,14 +7,15 @@ from xadmin.util import static, vendor as util_vendor
 
 register = Library()
 
+
 @register.simple_tag(takes_context=True)
 def view_block(context, block_name, *args, **kwargs):
-    if 'admin_view' not in context:
+    if "admin_view" not in context:
         return ""
 
-    admin_view = context['admin_view']
+    admin_view = context["admin_view"]
     nodes = []
-    method_name = 'block_%s' % block_name
+    method_name = "block_%s" % block_name
 
     cls_str = str if six.PY3 else basestring
     for view in [admin_view] + admin_view.plugins:
@@ -24,13 +25,15 @@ def view_block(context, block_name, *args, **kwargs):
             if result and isinstance(result, cls_str):
                 nodes.append(result)
     if nodes:
-        return mark_safe(''.join(nodes))
+        return mark_safe("".join(nodes))
     else:
         return ""
 
+
 @register.filter
 def admin_urlname(value, arg):
-    return 'xadmin:%s_%s_%s' % (value.app_label, value.model_name, arg)
+    return "xadmin:%s_%s_%s" % (value.app_label, value.model_name, arg)
+
 
 static = register.simple_tag(static)
 
@@ -42,6 +45,7 @@ def vendor(context, *tags):
 
 class BlockcaptureNode(template.Node):
     """https://chriskief.com/2013/11/06/conditional-output-of-a-django-block/"""
+
     def __init__(self, nodelist, varname):
         self.nodelist = nodelist
         self.varname = varname
@@ -49,17 +53,19 @@ class BlockcaptureNode(template.Node):
     def render(self, context):
         output = self.nodelist.render(context)
         context[self.varname] = str(output)
-        return ''
+        return ""
 
 
-@register.tag(name='blockcapture')
+@register.tag(name="blockcapture")
 def do_blockcapture(parser, token):
     try:
         tag_name, args = token.contents.split(None, 1)
     except ValueError:
-        raise template.TemplateSyntaxError("'blockcapture' node requires a variable name.")
+        raise template.TemplateSyntaxError(
+            "'blockcapture' node requires a variable name."
+        )
 
-    nodelist = parser.parse(('endblockcapture',))
+    nodelist = parser.parse(("endblockcapture",))
     parser.delete_first_token()
 
     return BlockcaptureNode(nodelist, args)

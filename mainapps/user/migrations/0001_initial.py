@@ -9,27 +9,45 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='MyUser',
+            name="MyUser",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('add_time', models.DateTimeField(auto_now=True, verbose_name='添加时间')),
-                ('name', models.CharField(max_length=20, verbose_name='用户名')),
-                ('upwd', models.CharField(max_length=40)),
-                ('phone', models.CharField(max_length=20, verbose_name='电话')),
-                ('real_name', models.CharField(max_length=20, verbose_name='真实名字')),
-                ('id_card', models.CharField(blank=True, max_length=20, verbose_name='身份证')),
-                ('cover', models.ImageField(blank=True, upload_to='userimg', verbose_name='用户头像')),
-                ('email', models.CharField(max_length=20, null=True, verbose_name='邮箱')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("add_time", models.DateTimeField(auto_now=True, verbose_name="添加时间")),
+                ("name", models.CharField(max_length=20, verbose_name="用户名")),
+                ("upwd", models.CharField(max_length=40)),
+                ("phone", models.CharField(max_length=20, verbose_name="电话")),
+                ("real_name", models.CharField(max_length=20, verbose_name="真实名字")),
+                (
+                    "id_card",
+                    models.CharField(blank=True, max_length=20, verbose_name="身份证"),
+                ),
+                (
+                    "cover",
+                    models.ImageField(
+                        blank=True, upload_to="userimg", verbose_name="用户头像"
+                    ),
+                ),
+                (
+                    "email",
+                    models.CharField(max_length=20, null=True, verbose_name="邮箱"),
+                ),
             ],
             options={
-                'verbose_name': '用户',
-                'verbose_name_plural': '用户',
-                'db_table': 't_myuser',
+                "verbose_name": "用户",
+                "verbose_name_plural": "用户",
+                "db_table": "t_myuser",
             },
         ),
     ]

@@ -10,13 +10,18 @@ from XinJuKe.settings import BASE_DIR
 def clear_session():
     os.chdir(BASE_DIR)
     python_env = sys.executable
-    cmd = '%s manage.py clearsessions' % python_env
+    cmd = "%s manage.py clearsessions" % python_env
     os.system(cmd)
-    log = '[%s]自动清理过期session, cmd:<%s>'% (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), cmd)
+    log = "[%s]自动清理过期session, cmd:<%s>" % (
+        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        cmd,
+    )
     print(log)
-    log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'crontab_clear_session.log')
-    with open(log_path, 'a+') as f:
-        f.write(log + '\n')
+    log_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "crontab_clear_session.log"
+    )
+    with open(log_path, "a+") as f:
+        f.write(log + "\n")
 
 
 sched = Scheduler()  # 实例化，固定格式
@@ -28,5 +33,3 @@ def mytask():
 
 
 sched.start()  # 启动该脚本
-
-

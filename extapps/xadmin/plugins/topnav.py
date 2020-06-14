@@ -1,4 +1,3 @@
-
 from django.template import loader
 from django.utils.text import capfirst
 from django.core.urlresolvers import reverse, NoReverseMatch
@@ -32,16 +31,27 @@ class TopNavPlugin(BaseAdminPlugin):
 
             if self.has_model_perm(model, "view"):
                 info = (app_label, model._meta.model_name)
-                if getattr(self.admin_site._registry[model], 'search_fields', None):
+                if getattr(self.admin_site._registry[model], "search_fields", None):
                     try:
-                        search_models.append({
-                            'title': _('Search %s') % capfirst(model._meta.verbose_name_plural),
-                            'url': reverse('xadmin:%s_%s_changelist' % info, current_app=site_name),
-                            'model': model
-                        })
+                        search_models.append(
+                            {
+                                "title": _("Search %s")
+                                % capfirst(model._meta.verbose_name_plural),
+                                "url": reverse(
+                                    "xadmin:%s_%s_changelist" % info,
+                                    current_app=site_name,
+                                ),
+                                "model": model,
+                            }
+                        )
                     except NoReverseMatch:
                         pass
-        return nodes.append(loader.render_to_string('xadmin/blocks/comm.top.topnav.html', {'search_models': search_models, 'search_name': SEARCH_VAR}))
+        return nodes.append(
+            loader.render_to_string(
+                "xadmin/blocks/comm.top.topnav.html",
+                {"search_models": search_models, "search_name": SEARCH_VAR},
+            )
+        )
 
     def block_top_navmenu(self, context, nodes):
         add_models = []
@@ -58,16 +68,23 @@ class TopNavPlugin(BaseAdminPlugin):
             if self.has_model_perm(model, "add"):
                 info = (app_label, model._meta.model_name)
                 try:
-                    add_models.append({
-                        'title': _('Add %s') % capfirst(model._meta.verbose_name),
-                        'url': reverse('xadmin:%s_%s_add' % info, current_app=site_name),
-                        'model': model
-                    })
+                    add_models.append(
+                        {
+                            "title": _("Add %s") % capfirst(model._meta.verbose_name),
+                            "url": reverse(
+                                "xadmin:%s_%s_add" % info, current_app=site_name
+                            ),
+                            "model": model,
+                        }
+                    )
                 except NoReverseMatch:
                     pass
 
         nodes.append(
-            loader.render_to_string('xadmin/blocks/comm.top.topnav.html', {'add_models': add_models}))
+            loader.render_to_string(
+                "xadmin/blocks/comm.top.topnav.html", {"add_models": add_models}
+            )
+        )
 
 
 site.register_plugin(TopNavPlugin, CommAdminView)

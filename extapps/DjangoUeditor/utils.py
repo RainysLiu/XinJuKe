@@ -6,10 +6,13 @@ if six.PY3:
     long = int
 
 
-class FileSize():
+class FileSize:
     SIZE_UNIT = {
-        "Byte": 1, "KB": 1024, "MB": 1048576,
-        "GB": 1073741824, "TB": 1099511627776
+        "Byte": 1,
+        "KB": 1024,
+        "MB": 1048576,
+        "GB": 1073741824,
+        "TB": 1099511627776,
     }
 
     def __init__(self, size):
@@ -18,6 +21,7 @@ class FileSize():
     @staticmethod
     def Format(size):
         import re
+
         if isinstance(size, six.integer_types):
             return size
         else:
@@ -25,8 +29,7 @@ class FileSize():
                 return 0
             else:
                 oSize = size.lstrip().upper().replace(" ", "")
-                pattern = re.compile(
-                    r"(\d*\.?(?=\d)\d*)(byte|kb|mb|gb|tb)", re.I)
+                pattern = re.compile(r"(\d*\.?(?=\d)\d*)(byte|kb|mb|gb|tb)", re.I)
                 match = pattern.match(oSize)
                 if match:
                     m_size, m_unit = match.groups()
@@ -70,8 +73,10 @@ class FileSize():
         if (self.size % FileSize.SIZE_UNIT[unit]) == 0:
             return "%s%s" % ((self.size / FileSize.SIZE_UNIT[unit]), unit)
         else:
-            return "%0.2f%s" % (round(float(self.size) / float(
-                FileSize.SIZE_UNIT[unit]), 2), unit)
+            return "%0.2f%s" % (
+                round(float(self.size) / float(FileSize.SIZE_UNIT[unit]), 2),
+                unit,
+            )
 
     def __str__(self):
         return self.FriendValue

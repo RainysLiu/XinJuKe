@@ -2,8 +2,15 @@ import copy
 import inspect
 from django import forms
 from django.forms.formsets import all_valid, DELETION_FIELD_NAME
-from django.forms.models import inlineformset_factory, BaseInlineFormSet, modelform_defines_fields
-from django.contrib.contenttypes.forms import BaseGenericInlineFormSet, generic_inlineformset_factory
+from django.forms.models import (
+    inlineformset_factory,
+    BaseInlineFormSet,
+    modelform_defines_fields,
+)
+from django.contrib.contenttypes.forms import (
+    BaseGenericInlineFormSet,
+    generic_inlineformset_factory,
+)
 from django.template import loader
 from django.template.loader import render_to_string
 from django.contrib.auth import get_permission_codename
@@ -11,10 +18,23 @@ from django.utils import six
 from django.utils.encoding import smart_text
 from crispy_forms.utils import TEMPLATE_PACK
 
-from xadmin.layout import FormHelper, Layout, flatatt, Container, Column, Field, Fieldset
+from xadmin.layout import (
+    FormHelper,
+    Layout,
+    flatatt,
+    Container,
+    Column,
+    Field,
+    Fieldset,
+)
 from xadmin.plugins.utils import get_context_dict
 from xadmin.sites import site
-from xadmin.views import BaseAdminPlugin, ModelFormAdminView, DetailAdminView, filter_hook
+from xadmin.views import (
+    BaseAdminPlugin,
+    ModelFormAdminView,
+    DetailAdminView,
+    filter_hook,
+)
 
 
 class ShowField(Field):
@@ -23,26 +43,28 @@ class ShowField(Field):
     def __init__(self, admin_view, *args, **kwargs):
         super(ShowField, self).__init__(*args, **kwargs)
         self.admin_view = admin_view
-        if admin_view.style == 'table':
+        if admin_view.style == "table":
             self.template = "xadmin/layout/field_value_td.html"
 
     def render(self, form, form_style, context, template_pack=TEMPLATE_PACK, **kwargs):
-        html = ''
+        html = ""
         detail = form.detail
         for field in self.fields:
             if not isinstance(form.fields[field].widget, forms.HiddenInput):
                 result = detail.get_field_result(field)
                 html += loader.render_to_string(
-                    self.template, context={'field': form[field], 'result': result})
+                    self.template, context={"field": form[field], "result": result}
+                )
         return html
 
 
 class DeleteField(Field):
-
     def render(self, form, form_style, context, template_pack=TEMPLATE_PACK, **kwargs):
         if form.instance.pk:
-            self.attrs['type'] = 'hidden'
-            return super(DeleteField, self).render(form, form_style, context, template_pack=TEMPLATE_PACK, **kwargs)
+            self.attrs["type"] = "hidden"
+            return super(DeleteField, self).render(
+                form, form_style, context, template_pack=TEMPLATE_PACK, **kwargs
+            )
         else:
             return ""
 
@@ -57,14 +79,15 @@ class InlineStyleManager(object):
     def register_style(self, name, style):
         self.inline_styles[name] = style
 
-    def get_style(self, name='stacked'):
+    def get_style(self, name="stacked"):
         return self.inline_styles.get(name)
+
 
 style_manager = InlineStyleManager()
 
 
 class InlineStyle(object):
-    template = 'xadmin/edit_inline/stacked.html'
+    template = "xadmin/edit_inline/stacked.html"
 
     def __init__(self, view, formset):
         self.view = view
@@ -75,41 +98,51 @@ class InlineStyle(object):
 
     def get_attrs(self):
         return {}
-style_manager.register_style('stacked', InlineStyle)
+
+
+style_manager.register_style("stacked", InlineStyle)
 
 
 class OneInlineStyle(InlineStyle):
-    template = 'xadmin/edit_inline/one.html'
+    template = "xadmin/edit_inline/one.html"
+
+
 style_manager.register_style("one", OneInlineStyle)
 
 
 class AccInlineStyle(InlineStyle):
-    template = 'xadmin/edit_inline/accordion.html'
+    template = "xadmin/edit_inline/accordion.html"
+
+
 style_manager.register_style("accordion", AccInlineStyle)
 
 
 class TabInlineStyle(InlineStyle):
-    template = 'xadmin/edit_inline/tab.html'
+    template = "xadmin/edit_inline/tab.html"
+
+
 style_manager.register_style("tab", TabInlineStyle)
 
 
 class TableInlineStyle(InlineStyle):
-    template = 'xadmin/edit_inline/tabular.html'
+    template = "xadmin/edit_inline/tabular.html"
 
     def update_layout(self, helper):
-        helper.add_layout(
-            Layout(*[TDField(f) for f in self.formset[0].fields.keys()]))
+        helper.add_layout(Layout(*[TDField(f) for f in self.formset[0].fields.keys()]))
 
     def get_attrs(self):
         fields = []
         readonly_fields = []
         if len(self.formset):
-            fields = [f for k, f in self.formset[0].fields.items() if k != DELETION_FIELD_NAME]
-            readonly_fields = [f for f in getattr(self.formset[0], 'readonly_fields', [])]
-        return {
-            'fields': fields,
-            'readonly_fields': readonly_fields
-        }
+            fields = [
+                f for k, f in self.formset[0].fields.items() if k != DELETION_FIELD_NAME
+            ]
+            readonly_fields = [
+                f for f in getattr(self.formset[0], "readonly_fields", [])
+            ]
+        return {"fields": fields, "readonly_fields": readonly_fields}
+
+
 style_manager.register_style("table", TableInlineStyle)
 
 
@@ -121,7 +154,7 @@ def replace_field_to_value(layout, av):
                 layout.fields[i] = ShowField(av, *lo.fields, **lo.attrs)
             elif isinstance(lo, cls_str):
                 layout.fields[i] = ShowField(av, lo)
-            elif hasattr(lo, 'get_field_names'):
+            elif hasattr(lo, "get_field_names"):
                 replace_field_to_value(lo, av)
 
 
@@ -134,12 +167,12 @@ class InlineModelAdmin(ModelFormAdminView):
     can_delete = True
     fields = []
     admin_view = None
-    style = 'stacked'
+    style = "stacked"
 
     def init(self, admin_view):
         self.admin_view = admin_view
         self.parent_model = admin_view.model
-        self.org_obj = getattr(admin_view, 'org_obj', None)
+        self.org_obj = getattr(admin_view, "org_obj", None)
         self.model_instance = self.org_obj or admin_view.model()
 
         return self
@@ -152,7 +185,11 @@ class InlineModelAdmin(ModelFormAdminView):
         else:
             exclude = list(self.exclude)
         exclude.extend(self.get_readonly_fields())
-        if self.exclude is None and hasattr(self.form, '_meta') and self.form._meta.exclude:
+        if (
+            self.exclude is None
+            and hasattr(self.form, "_meta")
+            and self.form._meta.exclude
+        ):
             # Take the custom ModelForm's Meta.exclude into account only if the
             # InlineModelAdmin doesn't define its own.
             exclude.extend(self.form._meta.exclude)
@@ -164,7 +201,7 @@ class InlineModelAdmin(ModelFormAdminView):
             "form": self.form,
             "formset": self.formset,
             "fk_name": self.fk_name,
-            'fields': forms.ALL_FIELDS,
+            "fields": forms.ALL_FIELDS,
             "exclude": exclude,
             "formfield_callback": self.formfield_for_dbfield,
             "extra": self.extra,
@@ -178,15 +215,15 @@ class InlineModelAdmin(ModelFormAdminView):
     @filter_hook
     def instance_form(self, **kwargs):
         formset = self.get_formset(**kwargs)
-        attrs = {
-            'instance': self.model_instance,
-            'queryset': self.queryset()
-        }
-        if self.request_method == 'post':
-            attrs.update({
-                'data': self.request.POST, 'files': self.request.FILES,
-                'save_as_new': "_saveasnew" in self.request.POST
-            })
+        attrs = {"instance": self.model_instance, "queryset": self.queryset()}
+        if self.request_method == "post":
+            attrs.update(
+                {
+                    "data": self.request.POST,
+                    "files": self.request.FILES,
+                    "save_as_new": "_saveasnew" in self.request.POST,
+                }
+            )
         instance = formset(**attrs)
         instance.view = self
 
@@ -194,10 +231,11 @@ class InlineModelAdmin(ModelFormAdminView):
         helper.form_tag = False
         helper.include_media = False
         # override form method to prevent render csrf_token in inline forms, see template 'bootstrap/whole_uni_form.html'
-        helper.form_method = 'get'
+        helper.form_method = "get"
 
-        style = style_manager.get_style(
-            'one' if self.max_num == 1 else self.style)(self, instance)
+        style = style_manager.get_style("one" if self.max_num == 1 else self.style)(
+            self, instance
+        )
         style.name = self.style
 
         if len(instance):
@@ -209,8 +247,9 @@ class InlineModelAdmin(ModelFormAdminView):
                 layout = Layout(*layout)
 
                 rendered_fields = [i[1] for i in layout.get_field_names()]
-                layout.extend([f for f in instance[0]
-                              .fields.keys() if f not in rendered_fields])
+                layout.extend(
+                    [f for f in instance[0].fields.keys() if f not in rendered_fields]
+                )
 
             helper.add_layout(layout)
             style.update_layout(helper)
@@ -235,12 +274,22 @@ class InlineModelAdmin(ModelFormAdminView):
                             value = smart_text(getattr(inst, readonly_field))
                         elif inspect.ismethod(getattr(inst, readonly_field, None)):
                             value = getattr(inst, readonly_field)()
-                            label = getattr(getattr(inst, readonly_field), 'short_description', readonly_field)
+                            label = getattr(
+                                getattr(inst, readonly_field),
+                                "short_description",
+                                readonly_field,
+                            )
                         elif inspect.ismethod(getattr(self, readonly_field, None)):
                             value = getattr(self, readonly_field)(inst)
-                            label = getattr(getattr(self, readonly_field), 'short_description', readonly_field)
+                            label = getattr(
+                                getattr(self, readonly_field),
+                                "short_description",
+                                readonly_field,
+                            )
                         if value:
-                            form.readonly_fields.append({'label': label, 'contents': value})
+                            form.readonly_fields.append(
+                                {"label": label, "contents": value}
+                            )
         return instance
 
     def has_auto_field(self, form):
@@ -261,7 +310,7 @@ class InlineModelAdmin(ModelFormAdminView):
         if self.opts.auto_created:
             return self.has_change_permission()
 
-        codename = get_permission_codename('add', self.opts)
+        codename = get_permission_codename("add", self.opts)
         return self.user.has_perm("%s.%s" % (self.opts.app_label, codename))
 
     def has_change_permission(self):
@@ -272,14 +321,14 @@ class InlineModelAdmin(ModelFormAdminView):
                     opts = field.rel.to._meta
                     break
 
-        codename = get_permission_codename('change', opts)
+        codename = get_permission_codename("change", opts)
         return self.user.has_perm("%s.%s" % (opts.app_label, codename))
 
     def has_delete_permission(self):
         if self.opts.auto_created:
             return self.has_change_permission()
 
-        codename = get_permission_codename('delete', self.opts)
+        codename = get_permission_codename("delete", self.opts)
         return self.user.has_perm("%s.%s" % (self.opts.app_label, codename))
 
 
@@ -295,7 +344,11 @@ class GenericInlineModelAdmin(InlineModelAdmin):
         else:
             exclude = list(self.exclude)
         exclude.extend(self.get_readonly_fields())
-        if self.exclude is None and hasattr(self.form, '_meta') and self.form._meta.exclude:
+        if (
+            self.exclude is None
+            and hasattr(self.form, "_meta")
+            and self.form._meta.exclude
+        ):
             # Take the custom ModelForm's Meta.exclude into account only if the
             # GenericInlineModelAdmin doesn't define its own.
             exclude.extend(self.form._meta.exclude)
@@ -312,7 +365,7 @@ class GenericInlineModelAdmin(InlineModelAdmin):
             "can_order": False,
             "max_num": self.max_num,
             "exclude": exclude,
-            'fields': forms.ALL_FIELDS
+            "fields": forms.ALL_FIELDS,
         }
         defaults.update(kwargs)
 
@@ -320,16 +373,15 @@ class GenericInlineModelAdmin(InlineModelAdmin):
 
 
 class InlineFormset(Fieldset):
-
     def __init__(self, formset, allow_blank=False, **kwargs):
         self.fields = []
-        self.css_class = kwargs.pop('css_class', '')
+        self.css_class = kwargs.pop("css_class", "")
         self.css_id = "%s-group" % formset.prefix
         self.template = formset.style.template
         self.inline_style = formset.style.name
         if allow_blank and len(formset) == 0:
-            self.template = 'xadmin/edit_inline/blank.html'
-            self.inline_style = 'blank'
+            self.template = "xadmin/edit_inline/blank.html"
+            self.inline_style = "blank"
         self.formset = formset
         self.model = formset.model
         self.opts = formset.model._meta
@@ -338,21 +390,22 @@ class InlineFormset(Fieldset):
 
     def render(self, form, form_style, context, template_pack=TEMPLATE_PACK, **kwargs):
         context = get_context_dict(context)
-        context.update(dict(
-            formset=self,
-            prefix=self.formset.prefix,
-            inline_style=self.inline_style,
-            **self.extra_attrs
-        ))
+        context.update(
+            dict(
+                formset=self,
+                prefix=self.formset.prefix,
+                inline_style=self.inline_style,
+                **self.extra_attrs
+            )
+        )
         return render_to_string(self.template, context)
 
 
 class Inline(Fieldset):
-
     def __init__(self, rel_model):
         self.model = rel_model
         self.fields = []
-        super(Inline,self).__init__(legend="")
+        super(Inline, self).__init__(legend="")
 
     def render(self, form, form_style, context, template_pack=TEMPLATE_PACK, **kwargs):
         return ""
@@ -362,7 +415,7 @@ def get_first_field(layout, clz):
     for layout_object in layout.fields:
         if issubclass(layout_object.__class__, clz):
             return layout_object
-        elif hasattr(layout_object, 'get_field_names'):
+        elif hasattr(layout_object, "get_field_names"):
             gf = get_first_field(layout_object, clz)
             if gf:
                 return gf
@@ -374,7 +427,7 @@ def replace_inline_objects(layout, fs):
     for i, layout_object in enumerate(layout.fields):
         if isinstance(layout_object, Inline) and layout_object.model in fs:
             layout.fields[i] = fs.pop(layout_object.model)
-        elif hasattr(layout_object, 'get_field_names'):
+        elif hasattr(layout_object, "get_field_names"):
             replace_inline_objects(layout_object, fs)
 
 
@@ -383,16 +436,23 @@ class InlineFormsetPlugin(BaseAdminPlugin):
 
     @property
     def inline_instances(self):
-        if not hasattr(self, '_inline_instances'):
+        if not hasattr(self, "_inline_instances"):
             inline_instances = []
             for inline_class in self.inlines:
                 inline = self.admin_view.get_view(
-                    (getattr(inline_class, 'generic_inline', False) and GenericInlineModelAdmin or InlineModelAdmin),
-                    inline_class).init(self.admin_view)
-                if not (inline.has_add_permission() or
-                        inline.has_change_permission() or
-                        inline.has_delete_permission() or
-                        inline.has_view_permission()):
+                    (
+                        getattr(inline_class, "generic_inline", False)
+                        and GenericInlineModelAdmin
+                        or InlineModelAdmin
+                    ),
+                    inline_class,
+                ).init(self.admin_view)
+                if not (
+                    inline.has_add_permission()
+                    or inline.has_change_permission()
+                    or inline.has_delete_permission()
+                    or inline.has_view_permission()
+                ):
                     continue
                 if not inline.has_add_permission():
                     inline.max_num = 0
@@ -419,7 +479,7 @@ class InlineFormsetPlugin(BaseAdminPlugin):
             formset.save()
 
     def get_context(self, context):
-        context['inline_formsets'] = self.formsets
+        context["inline_formsets"] = self.formsets
         return context
 
     def get_error_list(self, errors):
@@ -453,7 +513,8 @@ class InlineFormsetPlugin(BaseAdminPlugin):
             media = media + fs.media
         if self.formsets:
             media = media + self.vendor(
-                'xadmin.plugin.formset.js', 'xadmin.plugin.formset.css')
+                "xadmin.plugin.formset.js", "xadmin.plugin.formset.css"
+            )
         return media
 
     def _get_detail_formset_instance(self, inline):
@@ -463,27 +524,34 @@ class InlineFormsetPlugin(BaseAdminPlugin):
             replace_field_to_value(formset.helper.layout, inline)
             model = inline.model
             opts = model._meta
-            fake_admin_class = type(str('%s%sFakeAdmin' % (opts.app_label, opts.model_name)), (object, ), {'model': model})
+            fake_admin_class = type(
+                str("%s%sFakeAdmin" % (opts.app_label, opts.model_name)),
+                (object,),
+                {"model": model},
+            )
             for form in formset.forms:
                 instance = form.instance
                 if instance.pk:
                     form.detail = self.get_view(
-                        DetailAdminUtil, fake_admin_class, instance)
+                        DetailAdminUtil, fake_admin_class, instance
+                    )
         return formset
 
-class DetailAdminUtil(DetailAdminView):
 
+class DetailAdminUtil(DetailAdminView):
     def init_request(self, obj):
         self.obj = obj
         self.org_obj = obj
 
 
 class DetailInlineFormsetPlugin(InlineFormsetPlugin):
-
     def get_model_form(self, form, **kwargs):
-        self.formsets = [self._get_detail_formset_instance(
-            inline) for inline in self.inline_instances]
+        self.formsets = [
+            self._get_detail_formset_instance(inline)
+            for inline in self.inline_instances
+        ]
         return form
+
 
 site.register_plugin(InlineFormsetPlugin, ModelFormAdminView)
 site.register_plugin(DetailInlineFormsetPlugin, DetailAdminView)

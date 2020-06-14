@@ -19,7 +19,7 @@ from django.contrib.admin.utils import label_for_field, help_text_for_field
 import datetime
 import decimal
 
-if 'django.contrib.staticfiles' in settings.INSTALLED_APPS:
+if "django.contrib.staticfiles" in settings.INSTALLED_APPS:
     from django.contrib.staticfiles.templatetags.staticfiles import static
 else:
     from django.templatetags.static import static
@@ -34,7 +34,7 @@ try:
 except ImportError:
     from django.utils.timezone import localtime as tz_localtime
 
-if django.get_version() < '1.11':
+if django.get_version() < "1.11":
     DJANGO_11 = False
 else:
     DJANGO_11 = True
@@ -42,6 +42,7 @@ else:
 
 def xstatic(*tags):
     from .vendors import vendors
+
     node = vendors
 
     fs = []
@@ -50,12 +51,12 @@ def xstatic(*tags):
     cls_str = str if six.PY3 else basestring
     for tag in tags:
         try:
-            for p in tag.split('.'):
+            for p in tag.split("."):
                 node = node[p]
         except Exception as e:
-            if tag.startswith('xadmin'):
-                file_type = tag.split('.')[-1]
-                if file_type in ('css', 'js'):
+            if tag.startswith("xadmin"):
+                file_type = tag.split(".")[-1]
+                if file_type in ("css", "js"):
                     node = "xadmin/%s/%s" % (file_type, tag)
                 else:
                     raise e
@@ -65,32 +66,35 @@ def xstatic(*tags):
         if isinstance(node, cls_str):
             files = node
         else:
-            mode = 'dev'
+            mode = "dev"
             if not settings.DEBUG:
-                mode = getattr(settings, 'STATIC_USE_CDN',
-                               False) and 'cdn' or 'production'
+                mode = (
+                    getattr(settings, "STATIC_USE_CDN", False) and "cdn" or "production"
+                )
 
-            if mode == 'cdn' and mode not in node:
-                mode = 'production'
-            if mode == 'production' and mode not in node:
-                mode = 'dev'
+            if mode == "cdn" and mode not in node:
+                mode = "production"
+            if mode == "production" and mode not in node:
+                mode = "dev"
             files = node[mode]
 
-        files = type(files) in (list, tuple) and files or [files, ]
-        fs.extend([f % {'lang': lang.replace('_', '-')} for f in files])
+        files = (
+            type(files) in (list, tuple) and files or [files,]
+        )
+        fs.extend([f % {"lang": lang.replace("_", "-")} for f in files])
 
-    return [f.startswith('http://') and f or static(f) for f in fs]
+    return [f.startswith("http://") and f or static(f) for f in fs]
 
 
 def vendor(*tags):
     media = Media()
     for tag in tags:
-        file_type = tag.split('.')[-1]
+        file_type = tag.split(".")[-1]
         files = xstatic(tag)
-        if file_type == 'js':
+        if file_type == "js":
             media.add_js(files)
-        elif file_type == 'css':
-            media.add_css({'screen': files})
+        elif file_type == "css":
+            media.add_css({"screen": files})
     return media
 
 
@@ -98,12 +102,11 @@ def lookup_needs_distinct(opts, lookup_path):
     """
     Returns True if 'distinct()' should be used to query the given lookup path.
     """
-    field_name = lookup_path.split('__', 1)[0]
+    field_name = lookup_path.split("__", 1)[0]
     field = opts.get_field(field_name)
-    if ((hasattr(field, 'rel') and
-         isinstance(field.rel, models.ManyToManyRel)) or
-        (is_related_field(field) and
-         not field.field.unique)):
+    if (hasattr(field, "rel") and isinstance(field.rel, models.ManyToManyRel)) or (
+        is_related_field(field) and not field.field.unique
+    ):
         return True
     return False
 
@@ -113,11 +116,11 @@ def prepare_lookup_value(key, value):
     Returns a lookup value prepared to be used in queryset filtering.
     """
     # if key ends with __in, split parameter into separate values
-    if key.endswith('__in'):
-        value = value.split(',')
+    if key.endswith("__in"):
+        value = value.split(",")
     # if key ends with __isnull, special case '' and false
-    if key.endswith('__isnull') and type(value) == str:
-        if value.lower() in ('', 'false'):
+    if key.endswith("__isnull") and type(value) == str:
+        if value.lower() in ("", "false"):
             value = False
         else:
             value = True
@@ -138,8 +141,8 @@ def quote(s):
     for i in range(len(res)):
         c = res[i]
         if c in """:/_#?;@&=+$,"<>%\\""":
-            res[i] = '_%02X' % ord(c)
-    return ''.join(res)
+            res[i] = "_%02X" % ord(c)
+    return "".join(res)
 
 
 def unquote(s):
@@ -151,7 +154,7 @@ def unquote(s):
         return s
     mychr = chr
     myatoi = int
-    list = s.split('_')
+    list = s.split("_")
     res = [list[0]]
     myappend = res.append
     del list[0]
@@ -160,9 +163,9 @@ def unquote(s):
             try:
                 myappend(mychr(myatoi(item[:2], 16)) + item[2:])
             except ValueError:
-                myappend('_' + item)
+                myappend("_" + item)
         else:
-            myappend('_' + item)
+            myappend("_" + item)
     return "".join(res)
 
 
@@ -170,7 +173,7 @@ def flatten_fieldsets(fieldsets):
     """Returns a list of field names from an admin fieldsets structure."""
     field_names = []
     for name, opts in fieldsets:
-        for field in opts['fields']:
+        for field in opts["fields"]:
             # type checking feels dirty, but it seems like the best way here
             if type(field) == tuple:
                 field_names.extend(field)
@@ -180,7 +183,6 @@ def flatten_fieldsets(fieldsets):
 
 
 class NestedObjects(Collector):
-
     def __init__(self, *args, **kwargs):
         super(NestedObjects, self).__init__(*args, **kwargs)
         self.edges = {}  # {from_instance: [to_instances]}
@@ -196,7 +198,9 @@ class NestedObjects(Collector):
             else:
                 self.add_edge(None, obj)
         try:
-            return super(NestedObjects, self).collect(objs, source_attr=source_attr, **kwargs)
+            return super(NestedObjects, self).collect(
+                objs, source_attr=source_attr, **kwargs
+            )
         except models.ProtectedError as e:
             self.protected.update(e.protected_objects)
 
@@ -246,8 +250,8 @@ def model_format_dict(obj):
     else:
         opts = obj
     return {
-        'verbose_name': force_text(opts.verbose_name),
-        'verbose_name_plural': force_text(opts.verbose_name_plural)
+        "verbose_name": force_text(opts.verbose_name),
+        "verbose_name_plural": force_text(opts.verbose_name_plural),
     }
 
 
@@ -271,7 +275,7 @@ def model_ngettext(obj, n=None):
 
 
 def is_rel_field(name, model):
-    if hasattr(name, 'split') and name.find("__") > 0:
+    if hasattr(name, "split") and name.find("__") > 0:
         parts = name.split("__")
         if parts[0] in model._meta.get_all_field_names():
             return True
@@ -289,10 +293,10 @@ def lookup_field(name, obj, model_admin=None):
             attr = name
             value = attr(obj)
         elif (
-                model_admin is not None
-                and hasattr(model_admin, name)
-                and name not in ('__str__', '__unicode__')
-                ):
+            model_admin is not None
+            and hasattr(model_admin, name)
+            and name not in ("__str__", "__unicode__")
+        ):
             attr = getattr(model_admin, name)
             value = attr(obj)
         else:
@@ -315,12 +319,21 @@ def lookup_field(name, obj, model_admin=None):
 
 
 def admin_urlname(value, arg):
-    return 'xadmin:%s_%s_%s' % (value.app_label, value.model_name, arg)
+    return "xadmin:%s_%s_%s" % (value.app_label, value.model_name, arg)
 
 
 def boolean_icon(field_val):
-    return mark_safe(u'<i class="%s" alt="%s"></i>' % (
-        {True: 'fa fa-check-circle text-success', False: 'fa fa-times-circle text-error', None: 'fa fa-question-circle muted'}[field_val], field_val))
+    return mark_safe(
+        u'<i class="%s" alt="%s"></i>'
+        % (
+            {
+                True: "fa fa-check-circle text-success",
+                False: "fa fa-times-circle text-error",
+                None: "fa fa-question-circle muted",
+            }[field_val],
+            field_val,
+        )
+    )
 
 
 def display_for_field(value, field):
@@ -330,7 +343,9 @@ def display_for_field(value, field):
         return dict(field.flatchoices).get(value, EMPTY_CHANGELIST_VALUE)
     # NullBooleanField needs special-case null-handling, so it comes
     # before the general null test.
-    elif isinstance(field, models.BooleanField) or isinstance(field, models.NullBooleanField):
+    elif isinstance(field, models.BooleanField) or isinstance(
+        field, models.NullBooleanField
+    ):
         return boolean_icon(value)
     elif value is None:
         return EMPTY_CHANGELIST_VALUE
@@ -343,7 +358,7 @@ def display_for_field(value, field):
     elif isinstance(field, models.FloatField):
         return formats.number_format(value)
     elif isinstance(field.rel, models.ManyToManyRel):
-        return ', '.join([smart_text(obj) for obj in value.all()])
+        return ", ".join([smart_text(obj) for obj in value.all()])
     else:
         return smart_text(value)
 
@@ -374,7 +389,7 @@ def get_model_from_relation(field):
         return field.related_model
     elif is_related_field(field):
         return field.model
-    elif getattr(field, 'rel'):  # or isinstance?
+    elif getattr(field, "rel"):  # or isinstance?
         return field.rel.to
     else:
         raise NotRelationField
@@ -450,8 +465,10 @@ def get_limit_choices_to_from_path(model, path):
     fields = get_fields_from_path(model, path)
     fields = remove_trailing_data_field(fields)
     limit_choices_to = (
-        fields and hasattr(fields[-1], 'rel') and
-        getattr(fields[-1].rel, 'limit_choices_to', None))
+        fields
+        and hasattr(fields[-1], "rel")
+        and getattr(fields[-1].rel, "limit_choices_to", None)
+    )
     if not limit_choices_to:
         return models.Q()  # empty Q
     elif isinstance(limit_choices_to, models.Q):
@@ -463,7 +480,7 @@ def get_limit_choices_to_from_path(model, path):
 def sortkeypicker(keynames):
     negate = set()
     for i, k in enumerate(keynames):
-        if k[:1] == '-':
+        if k[:1] == "-":
             keynames[i] = k[1:]
             negate.add(k[1:])
 
@@ -473,6 +490,7 @@ def sortkeypicker(keynames):
             if k in negate:
                 composite[i] = -v
         return composite
+
     return getit
 
 
@@ -481,4 +499,4 @@ def is_related_field(field):
 
 
 def is_related_field2(field):
-    return (hasattr(field, 'rel') and field.rel != None) or is_related_field(field)
+    return (hasattr(field, "rel") and field.rel != None) or is_related_field(field)
