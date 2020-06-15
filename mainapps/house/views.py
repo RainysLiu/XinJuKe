@@ -4,6 +4,7 @@ import time
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 
@@ -87,7 +88,10 @@ def show(request, house_id):
 def search(request):
     keywd = request.GET.get("keyword")
     print(keywd)
-    houses = House.objects.filter(area__name__contains=keywd)
+    houses = House.objects.filter(Q(name__contains=keywd) | Q(area__name__contains=keywd)|
+                                  Q(area__parent__name__icontains=keywd) | Q(community__contains=keywd) |
+                                  Q(region__contains=keywd) | Q(address__contains=keywd))
+    # print(houses)
 
     paginator = Paginator(houses, per_page=9)  # 分页器
     # 获取page参数值
