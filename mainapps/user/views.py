@@ -18,6 +18,8 @@ from user import login_test
 
 from django.core.mail import send_mail
 
+from utils import db_connect
+
 
 def register(request):
     return render(request, "user/register.html", {"title": "用户注册"})
@@ -241,16 +243,23 @@ def modifyinfo_handle(request):
     real_name = request.POST.get("real_name")
     idcard = request.POST.get("idcard")
     print(imagepath, tel, email, real_name, idcard)
-    user = MyUser.objects.get(pk=request.session.get("user_id"))
-    print(user)
-    if imagepath:
-        user.cover = imagepath
-    user.email = email
-    user.real_name = real_name
-    user.id_card = idcard
-    user.save()
+    # user = MyUser.objects.get(pk=request.session.get("user_id"))
+    # print(user)
+    # if imagepath:
+    #     user.cover = imagepath
+    # user.email = email
+    # user.real_name = real_name
+    # user.id_card = idcard
+    # user.save()
+    sql = "update t_myuser set cover='%s',email='%s',real_name='%s',id_card='%s' where id=%s" % \
+          (imagepath, email, real_name, idcard, request.session.get("user_id"))
+    print(sql)
+    db_connect.db_excute(sql)
     print("修改成功")
-    user = MyUser.objects.get(pk=user.id)
+    # user = MyUser.objects.get(pk=request.session.get("user_id"))
+    sql = 'select * from t_myuser where id=%s' % request.session.get("user_id")
+    user = db_connect.convert_objects(sql)[0]
     request.session["user_cover"] = str(user.cover)  # 重设session图像路径
     request.session["user_name"] = user.name  # 重设session用户名
+
     return HttpResponseRedirect("/user/info/", locals())
